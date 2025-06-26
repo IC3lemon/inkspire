@@ -1,32 +1,34 @@
 {
-  "name": "virtualr",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "inkspire",
+  "version": "1.0.0",
+  "main": "index.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run install-missing-dependencies && npm run build && npm run serve",
+    "install-missing-dependencies": "npm i",
+    "build": "webpack --config webpack.config.js",
+    "serve": "http-server"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IC3lemon/inkspire.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IC3lemon/inkspire/issues"
+  },
+  "homepage": "https://github.com/IC3lemon/inkspire#readme",
+  "description": "",
   "dependencies": {
-    "gsap": "^3.12.7",
-    "lucide-react": "^0.344.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-lottie": "^1.2.10"
-  },
-  "devDependencies": {
-    "@types/react": "^18.2.56",
-    "@types/react-dom": "^18.2.19",
-    "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.18",
-    "eslint": "^8.56.0",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.5",
-    "postcss": "^8.4.35",
-    "tailwindcss": "^3.4.1",
-    "vite": "^5.1.4"
+    "@types/node": "^24.0.4",
+    "@webgpu/types": "^0.1.61",
+    "http-server": "^14.1.1",
+    "ts-loader": "^9.5.2",
+    "ts-shader-loader": "^2.0.2",
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1"
   }
 }
