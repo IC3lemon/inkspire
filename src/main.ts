@@ -20,9 +20,9 @@ const Initialize = async() =>{
     ]
 
     const verts2 = [
-        new Float32Array([ 5 / 100,  15 / 100]),    // top point of triangle 2
-        new Float32Array([ 0.0,  0.05]),    // bottom left = top of triangle 1
-        new Float32Array([ 0.10,  0.05])    // bottom right (shifted right for diagonal look)
+        new Float32Array([ 5 / 100,  15 / 100]),   
+        new Float32Array([ 0.0,  0.05]),    
+        new Float32Array([ 0.10,  0.05])   
     ];
 
     const triangleMesh1 : TriangleMesh = new TriangleMesh(device, verts1);
