@@ -1,4 +1,4 @@
-import shader from "./shaders.wgsl"
+import shader from "./shaders/shaders.wgsl"
 import { TriangleMesh } from "./triangle_mesh";
 
 const Initialize = async() =>{

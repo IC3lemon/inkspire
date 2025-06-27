@@ -1,5 +1,7 @@
 # inkspire
 
+best resource to learn webgpu i've found on the net by far : https://math.hws.edu/graphicsbook/c9/s1.html 
+
 ## `installation`
 ```sh
 git clone <this-repo-url>
