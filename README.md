@@ -47,6 +47,7 @@ npm run build
     - [x] pan across canvas
     - [ ] draw multiple circles (maybe blend vertices for those on top of each other?)
     - [ ] get pen pressure according to mouse speed
+    - [ ] get actual pen tablet ka pen pressure
 - [ ] Basic color picker implementation
 - [ ] Layer management via texture binding
 - [ ] clean up the html, get better UI
