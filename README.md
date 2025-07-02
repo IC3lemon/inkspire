@@ -40,6 +40,8 @@ npm run build
 
 ## TODO :
 - [x] learn webgpu + set shit up
+    - [x] [read this article](https://surma.dev/things/webgpu/)
+    - [ ] [watch these](https://www.youtube.com/watch?v=P2aWwaQv91o&list=PLn3eTxaOtL2Ns3wkxdyS3CiqkJuwQdZzn&index=12)
 - [ ] Compute-based brush rendering
     - [x] draw a sexy circle
     - [x] pan across canvas
