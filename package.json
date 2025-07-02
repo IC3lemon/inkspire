@@ -24,11 +24,16 @@
   "dependencies": {
     "@types/node": "^24.0.4",
     "@webgpu/types": "^0.1.61",
+    "gl-matrix": "^3.4.3",
     "http-server": "^14.1.1",
+    "jquery": "^3.7.1",
     "ts-loader": "^9.5.2",
     "ts-shader-loader": "^2.0.2",
     "typescript": "^5.8.3",
     "webpack": "^5.99.9",
     "webpack-cli": "^6.0.1"
+  },
+  "devDependencies": {
+    "@types/jquery": "^3.5.32"
   }
 }
