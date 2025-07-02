@@ -39,11 +39,12 @@ npm run build
 ```
 
 ## TODO :
-get core drawing working first
 - [x] learn webgpu + set shit up
 - [ ] Compute-based brush rendering
-      - [x] draw a sexy circle
-      - [x] pan across canvas
-      - [ ] draw multiple circles ( maybe blend vertice for those on top of each other ?)
-- [ ] Layer management via texture binding
+    - [x] draw a sexy circle
+    - [x] pan across canvas
+    - [ ] draw multiple circles (maybe blend vertices for those on top of each other?)
 - [ ] Basic color picker implementation
+- [ ] Layer management via texture binding
+
+
