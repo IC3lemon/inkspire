@@ -46,6 +46,7 @@ npm run build
     - [x] draw a sexy circle
     - [x] pan across canvas
     - [ ] draw multiple circles (maybe blend vertices for those on top of each other?)
+    - [ ] get pen pressure according to mouse speed
 - [ ] Basic color picker implementation
 - [ ] Layer management via texture binding
 - [ ] clean up the html, get better UI
