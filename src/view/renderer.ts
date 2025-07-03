@@ -6,19 +6,16 @@ import { Camera } from "../model/camera";
 export class Renderer{
     canvas : HTMLCanvasElement;
     device_deets : HTMLElement;
-
     // Device stuff
     adapter!: GPUAdapter;
     device!: GPUDevice;
     context!: GPUCanvasContext;
     format!: GPUTextureFormat;
     resolutionScale : number = 2.0;
-
     //Pipeline stuff
     uniformBuffer !: GPUBuffer;
     bindGroup!: GPUBindGroup;
     pipeline!: GPURenderPipeline;
-
     //Assets
     camera : Camera;
     circleMesh!: CircleMesh;
@@ -28,7 +25,7 @@ export class Renderer{
         this.canvas = canvas;
         this.device_deets = <HTMLElement>document.getElementById('dev-width');
         this.device_deets.innerText = this.canvas.width.toString() + 'x' + this.canvas.height.toString();
-        this.camera = new Camera([2, 0, 0]);
+        this.camera = new Camera([10, 0, 0]);
         this.t = 0;
     }
     setCanvasResolution() {
@@ -61,7 +58,6 @@ export class Renderer{
     }
 
     async setupDevice() {
-        
         //adapter: wrapper around (physical) GPU.
         //Describes features and limits
         this.adapter = <GPUAdapter> await navigator.gpu?.requestAdapter();
@@ -76,7 +72,6 @@ export class Renderer{
             format: this.format,
             alphaMode: "opaque"
         });
-
     }
 
     async makePipeline() {
@@ -134,7 +129,6 @@ export class Renderer{
     
             layout: pipelineLayout
         });
-
     }
 
     createAssets() {
@@ -169,11 +163,9 @@ export class Renderer{
         renderpass.setPipeline(this.pipeline);
         renderpass.setVertexBuffer(0, this.circleMesh.buffer);
         renderpass.setBindGroup(0, this.bindGroup);
-        renderpass.draw(202, 1, 0, 0);    // vertexCount = 2 * (segements + 1)
+        renderpass.draw(66, 1, 0, 0);    // vertexCount = 2 * (segments + 1)
         renderpass.end();
     
         this.device.queue.submit([commandEncoder.finish()]);
-
-        
     }
 }

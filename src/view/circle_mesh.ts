@@ -4,8 +4,8 @@ export class CircleMesh {
 
     constructor(device: GPUDevice, center: number[], canvasWidth: number, canvasHeight: number) {
         const verts: number[][] = [];
-        const segments = 100; // can use to increase resolution, gotta come up with a formula
-        const radius = 0.2;
+        const segments = 32; // can use to increase resolution, gotta come up with a formula
+        const radius = 0.1;
         const cx = center[0];
         const cy = center[1];
         const r = 0.13, g = 0.157, b = 0.192; // default brush ?
