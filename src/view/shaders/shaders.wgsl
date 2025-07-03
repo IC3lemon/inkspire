@@ -4,6 +4,7 @@ struct TransformData{
     projection: mat4x4<f32> // perspective
 };
 
+
 @binding(0) @group(0) var<uniform> transformUBO : TransformData;
 
 struct Fragment {
