@@ -23,6 +23,9 @@ export class App{
     isSpacePressed: boolean = false;
     isLeftClicked:boolean = false;
     skipNextClick : boolean = false;
+    lastDrawX: number | null = null;
+    lastDrawY: number | null = null;
+
 
     constructor(canvas : HTMLCanvasElement){
         this.canvas = canvas;
@@ -80,7 +83,24 @@ export class App{
 
     run = () => {
         var running : boolean = true;
-        this.renderer.render(this.isSpacePressed && this.isCursorLocked, this.isLeftClicked && this.isCursorLocked, this.mouseX, this.mouseY, this.ndcX, this.ndcY, this.skipNextClick);
+        const isDrawing = this.isLeftClicked && this.isCursorLocked && !this.skipNextClick;
+        this.renderer.render(
+            this.isSpacePressed && this.isCursorLocked, 
+            isDrawing, 
+            this.mouseX, this.mouseY, 
+            this.ndcX, this.ndcY, 
+            this.skipNextClick,
+            this.lastDrawX,
+            this.lastDrawY
+        );
+        if (isDrawing) {
+            this.lastDrawX = this.ndcX;
+            this.lastDrawY = this.ndcY;
+        } else {
+            this.lastDrawX = null;
+            this.lastDrawY = null;
+        }
+
         this.skipNextClick = false;
         this.mouseX = 0;
         this.mouseY = 0;

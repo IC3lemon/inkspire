@@ -148,16 +148,42 @@ export class Renderer{
         mouseY : number, 
         drawX : number, 
         drawY : number, 
-        skipDraw : boolean
+        skipDraw : boolean,
+        lastDrawX : number | null,
+        lastDrawY : number | null
     ) { 
         
         if (SpaceDown && LeftClicked) { // panning
             this.camera.pan(mouseX, mouseY);
         }
 
-        if (LeftClicked && !SpaceDown && !skipDraw){
-            this.drawCircle(drawX, drawY, [0.13, 0.157, 0.192]);
-            this.circleCount += 1;
+        if (LeftClicked && !SpaceDown && !skipDraw) {
+            const brushColor = [0.13, 0.157, 0.192];
+
+            const prevX = lastDrawX;
+            const prevY = lastDrawY;
+
+            if (prevX === null || prevY === null) {
+                this.drawCircle(drawX, drawY, brushColor);
+                this.circleCount += 1;
+            } else {
+                const dx = drawX - prevX;
+                const dy = drawY - prevY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const spacing = 0.02; // smaller = denser
+
+                const steps = Math.floor(dist / spacing);
+                for (let i = 0; i <= steps; i++) {
+                    const t = i / steps;
+                    const x = prevX + dx * t;
+                    const y = prevY + dy * t;
+                    this.drawCircle(x, y, brushColor);
+                    this.circleCount += 1;
+                }
+            }
+
+            lastDrawX = drawX;
+            lastDrawY = drawY;
         }
 
         if (this.cursorMesh) {
