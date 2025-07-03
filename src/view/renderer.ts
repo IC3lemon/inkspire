@@ -5,12 +5,14 @@ import { Camera } from "../model/camera";
 
 export class Renderer{
     canvas : HTMLCanvasElement;
+    device_deets : HTMLElement;
 
     // Device stuff
     adapter!: GPUAdapter;
     device!: GPUDevice;
     context!: GPUCanvasContext;
     format!: GPUTextureFormat;
+    resolutionScale : number = 2.0;
 
     //Pipeline stuff
     uniformBuffer !: GPUBuffer;
@@ -24,18 +26,42 @@ export class Renderer{
 
     constructor(canvas : HTMLCanvasElement){
         this.canvas = canvas;
+        this.device_deets = <HTMLElement>document.getElementById('dev-width');
+        this.device_deets.innerText = this.canvas.width.toString() + 'x' + this.canvas.height.toString();
         this.camera = new Camera([2, 0, 0]);
         this.t = 0;
+    }
+    setCanvasResolution() {
+        const cssWidth = 800;
+        const cssHeight = 600;
+
+        const res = this.resolutionScale;
+        this.canvas.style.width = `${cssWidth}px`;
+        this.canvas.style.height = `${cssHeight}px`;
+        this.canvas.width = cssWidth * res;
+        this.canvas.height = cssHeight * res;
+
+        this.device_deets.innerText = `${this.canvas.width}x${this.canvas.height}`;
+
+        this.context.configure({
+            device: this.device,
+            format: this.format,
+            alphaMode: "opaque"
+        });
     }
 
     async Initialize() {
         await this.setupDevice();
+        this.setCanvasResolution();
         this.createAssets();
         await this.makePipeline();
+
+        window.addEventListener('resize', () => this.setCanvasResolution());
         // this.render();
     }
 
     async setupDevice() {
+        
         //adapter: wrapper around (physical) GPU.
         //Describes features and limits
         this.adapter = <GPUAdapter> await navigator.gpu?.requestAdapter();

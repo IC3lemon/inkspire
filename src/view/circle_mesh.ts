@@ -10,10 +10,9 @@ export class CircleMesh {
         const cy = center[1];
         const r = 0.13, g = 0.157, b = 0.192; // default brush ?
         // rgb(34, 40, 49)
-        // Calculate aspect ratio correction
         const aspectRatio = canvasWidth / canvasHeight;
-        const radiusX = radius ;
-        const radiusY = radius; // Stretch Y to compensate for aspect ratio
+        const radiusX = radius ; // dont need to do this anymore breh
+        const radiusY = radius; 
 
         for (let i = 0; i <= segments; i++) {
             const angle = (i / segments) * 2 * Math.PI;
@@ -22,7 +21,7 @@ export class CircleMesh {
 
             verts.push([0, cx + x, cy + y, r, g, b]);
             verts.push([0, cx, cy, r, g, b]);     
-        } // perfect circle
+        } // perfect circle secy
 
         const vertices: Float32Array = new Float32Array(verts.flat());
         const usage: GPUBufferUsageFlags = GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST;
