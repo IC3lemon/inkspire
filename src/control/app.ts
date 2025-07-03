@@ -19,13 +19,16 @@ export class App{
     
     forwards_amount !: number;
     right_amount !: number;
+
     isCursorLocked: boolean = false;
     isSpacePressed: boolean = false;
     isLeftClicked:boolean = false;
     skipNextClick : boolean = false;
     lastDrawX: number | null = null;
     lastDrawY: number | null = null;
-
+    smoothedX: number = 0;
+    smoothedY: number = 0;
+    smoothedSpeed: number = 0;
 
     constructor(canvas : HTMLCanvasElement){
         this.canvas = canvas;
@@ -83,19 +86,30 @@ export class App{
 
     run = () => {
         var running : boolean = true;
-        const isDrawing = this.isLeftClicked && this.isCursorLocked && !this.skipNextClick;
+        const isDrawing = this.isLeftClicked && this.isCursorLocked && !this.skipNextClick && !this.isSpacePressed;
+        const brushSpeed = Math.sqrt(this.mouseX * this.mouseX + this.mouseY * this.mouseY);
+        const speedAlpha = 0.15;  
+        this.smoothedSpeed = (1 - speedAlpha) * this.smoothedSpeed + speedAlpha * brushSpeed; // is this dropping to 0 ???
+
+        var spidlabel = <HTMLElement>document.getElementById('speed');
+        spidlabel.innerText = brushSpeed.toString();
+
+        const alpha = 0.45; // try 0.1 - 0.3 for smoothing aggressiveness 0.45 is comfy acc to me, 1 => smoothing off
+        this.smoothedX = (1 - alpha) * this.smoothedX + alpha * this.ndcX;
+        this.smoothedY = (1 - alpha) * this.smoothedY + alpha * this.ndcY;
+
         this.renderer.render(
-            this.isSpacePressed && this.isCursorLocked, 
+            this.isSpacePressed && this.isCursorLocked, // panning 
             isDrawing, 
             this.mouseX, this.mouseY, 
-            this.ndcX, this.ndcY, 
-            this.skipNextClick,
+            this.smoothedX, this.smoothedY, 
             this.lastDrawX,
-            this.lastDrawY
+            this.lastDrawY,
+            this.smoothedSpeed // ts not working
         );
         if (isDrawing) {
-            this.lastDrawX = this.ndcX;
-            this.lastDrawY = this.ndcY;
+            this.lastDrawX = this.smoothedX;
+            this.lastDrawY = this.smoothedY;
         } else {
             this.lastDrawX = null;
             this.lastDrawY = null;

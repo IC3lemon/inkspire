@@ -142,22 +142,22 @@ export class Renderer{
     }
 
     async render(
-        SpaceDown : boolean, 
-        LeftClicked : boolean, 
+        Panning : boolean, 
+        Drawing : boolean, 
         mouseX : number, 
         mouseY : number, 
         drawX : number, 
         drawY : number, 
-        skipDraw : boolean,
         lastDrawX : number | null,
-        lastDrawY : number | null
+        lastDrawY : number | null,
+        brushSpeed : number
     ) { 
-        
-        if (SpaceDown && LeftClicked) { // panning
+        const minSpd = 0;
+        if (Panning) { // panning
             this.camera.pan(mouseX, mouseY);
         }
 
-        if (LeftClicked && !SpaceDown && !skipDraw) {
+        if (Drawing) {
             const brushColor = [0.13, 0.157, 0.192];
 
             const prevX = lastDrawX;
@@ -172,7 +172,7 @@ export class Renderer{
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 const spacing = 0.02; // smaller = denser
 
-                const steps = Math.floor(dist / spacing);
+                const steps = Math.max(1, Math.floor(dist / spacing));
                 for (let i = 0; i <= steps; i++) {
                     const t = i / steps;
                     const x = prevX + dx * t;
@@ -220,7 +220,7 @@ export class Renderer{
             renderpass.draw(66, 1, 0, 0);
         }
 
-        if (!SpaceDown && this.cursorMesh) {
+        if (!Panning && this.cursorMesh) {
             if (this.cursorMesh) {
                 renderpass.setPipeline(this.pipeline);
                 renderpass.setVertexBuffer(0, this.cursorMesh.buffer);
