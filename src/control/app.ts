@@ -12,12 +12,17 @@ export class App{
     
     mouseX!: number;
     mouseY!: number;
+    virtualMouseX : number = 0;
+    virtualMouseY : number = 0;
+    ndcX : number = 0;
+    ndcY : number = 0;
     
     forwards_amount !: number;
     right_amount !: number;
     isCursorLocked: boolean = false;
     isSpacePressed: boolean = false;
     isLeftClicked:boolean = false;
+    skipNextClick : boolean = false;
 
     constructor(canvas : HTMLCanvasElement){
         this.canvas = canvas;
@@ -39,13 +44,18 @@ export class App{
 
         document.addEventListener("pointerlockchange", () => {
             this.isCursorLocked = document.pointerLockElement === this.canvas;
+            if (this.isCursorLocked) {
+                this.skipNextClick = true;
+            }
             
         });
 
         this.canvas.addEventListener("mousedown", (event) => {
-        if (event.button === 0) { // Left click
-            this.isLeftClicked = true;
-        }
+            if (event.button === 0) { // Left click
+                this.isLeftClicked = true;
+            }
+        });
+
         this.canvas.addEventListener("mouseup", (event) => {
             if (event.button === 0) { // Left click
                 this.isLeftClicked = false;
@@ -62,10 +72,6 @@ export class App{
                 this.pointerLabel.innerText = (this.isSpacePressed && this.isLeftClicked).toString();
             }
         });
-
-        
-    });
-
     }
 
     async initialize(){
@@ -74,8 +80,8 @@ export class App{
 
     run = () => {
         var running : boolean = true;
-        this.renderer.render(this.isSpacePressed && this.isLeftClicked, this.mouseX, this.mouseY);
-
+        this.renderer.render(this.isSpacePressed && this.isCursorLocked, this.isLeftClicked && this.isCursorLocked, this.mouseX, this.mouseY, this.ndcX, this.ndcY, this.skipNextClick);
+        this.skipNextClick = false;
         this.mouseX = 0;
         this.mouseY = 0;
 
@@ -101,8 +107,14 @@ export class App{
     handle_mousemove(event : MouseEvent){
         this.mouseX = event.movementX;
         this.mouseY = event.movementY;
+
+        this.virtualMouseX += event.movementX;
+        this.virtualMouseY += event.movementY;
+
+        this.ndcX = (10 * this.virtualMouseX) / this.canvas.width ;
+        this.ndcY = 1 - ((10 * this.virtualMouseY) / this.canvas.height);
+
         this.mouseXLabel.innerText = this.mouseX.toString();
         this.mouseYLabel.innerText = this.mouseY.toString();
-        // event.movementX, event.movementY -> to get cursor
     }
 }

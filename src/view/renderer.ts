@@ -19,15 +19,21 @@ export class Renderer{
     //Assets
     camera : Camera;
     circleMesh!: CircleMesh;
-    t: number = 0.0;
+    cursorMesh?: CircleMesh;
+    circleCount: number;
+    circleMeshes: CircleMesh[] = [];
+    // t: number = 0.0;
 
     constructor(canvas : HTMLCanvasElement){
         this.canvas = canvas;
         this.device_deets = <HTMLElement>document.getElementById('dev-width');
         this.device_deets.innerText = this.canvas.width.toString() + 'x' + this.canvas.height.toString();
         this.camera = new Camera([10, 0, 0]);
-        this.t = 0;
+        // this.t = 0;
+        this.circleCount = 0;
+
     }
+
     setCanvasResolution() {
         const cssWidth = 800;
         const cssHeight = 600;
@@ -49,12 +55,10 @@ export class Renderer{
 
     async Initialize() {
         await this.setupDevice();
-        this.setCanvasResolution();
-        this.createAssets();
+        this.setCanvasResolution(); // r: 0.93, g: 0.93, b: 0.93, a: 1.0
+        this.drawCircle(0, 0, [0.93, 0.93, 0.93]); // this.CreateAssets(); [0.13, 0.157, 0.192]
         await this.makePipeline();
-
         window.addEventListener('resize', () => this.setCanvasResolution());
-        // this.render();
     }
 
     async setupDevice() {
@@ -110,7 +114,7 @@ export class Renderer{
                     code : shader
                 }),
                 entryPoint : "vs_main",
-                buffers: [this.circleMesh.bufferLayout,]
+                buffers: [this.circleMeshes[0].bufferLayout]
             },
     
             fragment : {
@@ -131,15 +135,37 @@ export class Renderer{
         });
     }
 
-    createAssets() {
-        this.circleMesh = new CircleMesh(this.device, [0, 0], this.canvas.width, this.canvas.height);
+    drawCircle(x : number, y : number , rgb : number[]) {
+        const mesh = new CircleMesh(this.device, [x, y], this.canvas.width, this.canvas.height, rgb);
+        this.circleMeshes.push(mesh);
+        this.circleCount += 1;
     }
 
-    async render(isPanning : boolean, mouseX : number, mouseY : number) { 
-
-        if (isPanning) {
+    async render(
+        SpaceDown : boolean, 
+        LeftClicked : boolean, 
+        mouseX : number, 
+        mouseY : number, 
+        drawX : number, 
+        drawY : number, 
+        skipDraw : boolean
+    ) { 
+        
+        if (SpaceDown && LeftClicked) { // panning
             this.camera.pan(mouseX, mouseY);
         }
+
+        if (LeftClicked && !SpaceDown && !skipDraw){
+            this.drawCircle(drawX, drawY, [0.13, 0.157, 0.192]);
+            this.circleCount += 1;
+        }
+
+        if (this.cursorMesh) {
+            // Drop old mesh to free memory (surprised this worked)
+            this.cursorMesh = undefined;
+        }
+        this.cursorMesh = new CircleMesh(this.device, [drawX, drawY], this.canvas.width, this.canvas.height, [1.0, 0.0, 0.0]);
+
         
         const projection = mat4.create();
         mat4.perspective(projection, Math.PI/4, this.canvas.width/this.canvas.height, 0.001, 1000);
@@ -160,12 +186,24 @@ export class Renderer{
                 storeOp: "store"
             }]
         });
-        renderpass.setPipeline(this.pipeline);
-        renderpass.setVertexBuffer(0, this.circleMesh.buffer);
-        renderpass.setBindGroup(0, this.bindGroup);
-        renderpass.draw(66, 1, 0, 0);    // vertexCount = 2 * (segments + 1)
+
+        for (const mesh of this.circleMeshes) {
+            renderpass.setPipeline(this.pipeline);
+            renderpass.setVertexBuffer(0, mesh.buffer);
+            renderpass.setBindGroup(0, this.bindGroup);
+            renderpass.draw(66, 1, 0, 0);
+        }
+
+        if (!SpaceDown && this.cursorMesh) {
+            if (this.cursorMesh) {
+                renderpass.setPipeline(this.pipeline);
+                renderpass.setVertexBuffer(0, this.cursorMesh.buffer);
+                renderpass.setBindGroup(0, this.bindGroup);
+                renderpass.draw(66, 1, 0, 0);
+            }
+        }
+        // vertexCount = 2 * (segments + 1)
         renderpass.end();
-    
         this.device.queue.submit([commandEncoder.finish()]);
     }
 }
