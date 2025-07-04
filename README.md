@@ -49,6 +49,7 @@ npm run build
     - [ ] get pen pressure according to mouse speed
     - [ ] get actual pen tablet ka pen pressure
     - [ ] hyper realistic brush using [this](https://www.diva-portal.org/smash/get/diva2:970839/FULLTEXT01.pdf)
+    - [ ] implement splines
 - [ ] Basic color picker implementation
 - [ ] Layer management via texture binding
 - [ ] clean up the html, get better UI
