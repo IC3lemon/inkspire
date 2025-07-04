@@ -22,6 +22,8 @@ export class Renderer{
     cursorMesh?: CircleMesh;
     circleCount: number;
     circleMeshes: CircleMesh[] = [];
+
+    currentStrokePoints: {x: number, y: number}[] = [];
     // t: number = 0.0;
 
     constructor(canvas : HTMLCanvasElement){
@@ -56,7 +58,7 @@ export class Renderer{
     async Initialize() {
         await this.setupDevice();
         this.setCanvasResolution(); // r: 0.93, g: 0.93, b: 0.93, a: 1.0
-        this.drawCircle(0, 0, [0.93, 0.93, 0.93]); // this.CreateAssets(); [0.13, 0.157, 0.192]
+        this.drawCircle(0, 0, [0.93, 0.93, 0.93], 0); // this.CreateAssets(); [0.13, 0.157, 0.192] init circle same colour as bg
         await this.makePipeline();
         window.addEventListener('resize', () => this.setCanvasResolution());
     }
@@ -135,8 +137,8 @@ export class Renderer{
         });
     }
 
-    drawCircle(x : number, y : number , rgb : number[]) {
-        const mesh = new CircleMesh(this.device, [x, y], this.canvas.width, this.canvas.height, rgb);
+    drawCircle(x : number, y : number , rgb : number[], radius : number = 0.1) {
+        const mesh = new CircleMesh(this.device, [x, y], this.canvas.width, this.canvas.height, rgb, radius);
         this.circleMeshes.push(mesh);
         this.circleCount += 1;
     }
@@ -152,39 +154,71 @@ export class Renderer{
         lastDrawY : number | null,
         brushSpeed : number
     ) { 
-        const minSpd = 0;
+
+        // const minBrush = 0.07;
+        // const maxBrush = 0.15;
+        // const speedFactor = Math.min(1, brushSpeed / 2); // adjust divisor for scaling
+        // var brushSize = minBrush + (maxBrush - minBrush) * speedFactor;
+        // var ok = <HTMLElement>document.getElementById('size');
+        // ok.innerText = brushSize.toString();
+        // const minSpd = 0;
+        // brushSize = 0.1;
         if (Panning) { // panning
             this.camera.pan(mouseX, mouseY);
         }
 
         if (Drawing) {
-            const brushColor = [0.13, 0.157, 0.192];
-
             const prevX = lastDrawX;
             const prevY = lastDrawY;
 
             if (prevX === null || prevY === null) {
-                this.drawCircle(drawX, drawY, brushColor);
-                this.circleCount += 1;
+                this.currentStrokePoints.push({x: drawX, y: drawY});
             } else {
                 const dx = drawX - prevX;
                 const dy = drawY - prevY;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                const spacing = 0.02; // smaller = denser
-
+                const spacing = 0.02;
                 const steps = Math.max(1, Math.floor(dist / spacing));
+
                 for (let i = 0; i <= steps; i++) {
                     const t = i / steps;
                     const x = prevX + dx * t;
                     const y = prevY + dy * t;
-                    this.drawCircle(x, y, brushColor);
-                    this.circleCount += 1;
+                    this.currentStrokePoints.push({x, y});
                 }
             }
 
             lastDrawX = drawX;
             lastDrawY = drawY;
         }
+
+        if (!Drawing && this.currentStrokePoints.length > 0) {
+            const brushColor = [0.13, 0.157, 0.192];
+            const totalPoints = this.currentStrokePoints.length;
+            const minBrush = 0.07;
+            const maxBrush = 0.15;
+            const taperPercent = 0.15;
+
+            for (let i = 0; i < totalPoints; i++) {
+                let t = 1;
+
+                if (i < totalPoints * taperPercent) {
+                    t = i / (totalPoints * taperPercent); // head taper
+                } else if (i > totalPoints * (1 - taperPercent)) {
+                    t = (totalPoints - i) / (totalPoints * taperPercent); // tail taper
+                }
+
+                t = Math.min(1, Math.max(0, t)); // clamp
+
+                const radius = minBrush + (maxBrush - minBrush) * t;
+                const {x, y} = this.currentStrokePoints[i];
+                this.drawCircle(x, y, brushColor, radius);
+                this.circleCount += 1;
+            }
+
+            this.currentStrokePoints = [];
+        }
+
 
         if (this.cursorMesh) {
             // Drop old mesh to free memory (surprised this worked)

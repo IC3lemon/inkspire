@@ -36,6 +36,8 @@ export class App{
 
         this.forwards_amount = 0;
         this.right_amount = 0;
+        this.mouseX = 0;
+        this.mouseY = 0;
 
         this.keyLabel = <HTMLElement>document.getElementById('key-down');
         this.mouseXLabel = <HTMLElement>document.getElementById('mouse-x');

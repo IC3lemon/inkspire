@@ -2,15 +2,20 @@ export class CircleMesh {
     buffer: GPUBuffer
     bufferLayout: GPUVertexBufferLayout
 
-    constructor(device: GPUDevice, center: number[], canvasWidth: number, canvasHeight: number, rgb : number[]) {
+    constructor(
+        device: GPUDevice, 
+        center: number[], 
+        canvasWidth: number, 
+        canvasHeight: number, 
+        rgb : number[], 
+        radius : number = 0.1) 
+        {
         const verts: number[][] = [];
         const segments = 32; // can use to increase resolution, gotta come up with a formula
-        const radius = 0.1;
+        // const radius = 0.1;
         const cx = center[0];
         const cy = center[1]; // r = 0.13, g = 0.157, b = 0.192;
-        const r = rgb[0]; // default brush ?
-        const g = rgb[1];
-        const b = rgb[2];
+        const [r, g, b] = rgb;
         // rgb(34, 40, 49)
         const aspectRatio = canvasWidth / canvasHeight;
         const radiusX = radius ; // dont need to do this anymore breh
