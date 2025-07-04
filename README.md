@@ -45,9 +45,12 @@ npm run build
 - [ ] Compute-based brush rendering
     - [x] draw a sexy circle
     - [x] pan across canvas
-    - [ ] draw multiple circles (maybe blend vertices for those on top of each other?)
+    - [x] draw multiple circles (stupid inefficient workaround currently)
     - [ ] get pen pressure according to mouse speed
     - [ ] get actual pen tablet ka pen pressure
+    - [ ] hyper realistic brush using [this](https://www.diva-portal.org/smash/get/diva2:970839/FULLTEXT01.pdf) maybe
+    - [ ] implement splines
+    - [ ] drop the rastered approach, implement a spline one
 - [ ] Basic color picker implementation
 - [ ] Layer management via texture binding
 - [ ] clean up the html, get better UI
