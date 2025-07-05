@@ -79,18 +79,26 @@ npm run build
 - [x] learn webgpu + set shit up
     - [x] [read this article](https://surma.dev/things/webgpu/)
     - [x] [watch these](https://www.youtube.com/watch?v=P2aWwaQv91o&list=PLn3eTxaOtL2Ns3wkxdyS3CiqkJuwQdZzn&index=12)
-- [ ] Compute-based brush rendering
-    - [x] draw a sexy circle
-    - [x] pan across canvas
-    - [x] draw multiple circles (stupid inefficient workaround currently)
-    - [x] tapered strokes
-    - [ ] hyper realistic brush using [this](https://www.diva-portal.org/smash/get/diva2:970839/FULLTEXT01.pdf) maybe
-    - [x] implement splines (kinda done ? pseudo stroke approach currently)
-    - [x] drop the rastered approach, implement a spline one (need to perfect)
-    - [x] stroke erasing
-- [x] Basic color picker implementation
-    - [ ] maintain color palette of recent colours
-    - [ ] dropper picker implementation to get colors from canvas
-- [ ] Layer management
+
+- [ ] Drawing Engine
+    - [x] Compute-based brush rendering
+         - [x] draw a sexy circle
+         - [x] pan across canvas
+         - [x] draw multiple circles (stupid inefficient workaround currently)
+         - [x] tapered strokes
+         - [ ] hyper realistic brush using [this](https://www.diva-portal.org/smash/get/diva2:970839/FULLTEXT01.pdf) maybe
+         - [x] implement splines (kinda done ? pseudo stroke approach currently) {TODO}
+         - [x] drop the rastered approach, implement a spline one (need to perfect) {TODO}
+         - [x] stroke erasing
+    - [x] Basic color picker implementation
+         - [ ] maintain color palette of recent colours
+         - [ ] dropper picker implementation to get colors from canvas
+    - [ ] textures to the circle to make unique brushes
+    - [ ] Layer management
+    - [ ] Utilities and mechanics
+         - [ ] Flip Canvas
+         - [ ] Undo Redo
+         - [ ] maintain action stack ( as strokes maybe? )
+          
 - [ ] clean up the html, get better UI
 
