@@ -41,17 +41,17 @@ npm run build
 ## TODO :
 - [x] learn webgpu + set shit up
     - [x] [read this article](https://surma.dev/things/webgpu/)
-    - [ ] [watch these](https://www.youtube.com/watch?v=P2aWwaQv91o&list=PLn3eTxaOtL2Ns3wkxdyS3CiqkJuwQdZzn&index=12)
+    - [x] [watch these](https://www.youtube.com/watch?v=P2aWwaQv91o&list=PLn3eTxaOtL2Ns3wkxdyS3CiqkJuwQdZzn&index=12)
 - [ ] Compute-based brush rendering
     - [x] draw a sexy circle
     - [x] pan across canvas
     - [x] draw multiple circles (stupid inefficient workaround currently)
-    - [ ] get pen pressure according to mouse speed
-    - [ ] get actual pen tablet ka pen pressure
+    - [x] tapered strokes
     - [ ] hyper realistic brush using [this](https://www.diva-portal.org/smash/get/diva2:970839/FULLTEXT01.pdf) maybe
-    - [ ] implement splines
-    - [ ] drop the rastered approach, implement a spline one
+    - [x] implement splines (kinda done ? pseudo stroke approach currently)
+    - [x] drop the rastered approach, implement a spline one (need to perfect)
+    - [x] stroke erasing
 - [ ] Basic color picker implementation
-- [ ] Layer management via texture binding
+- [ ] Layer management
 - [ ] clean up the html, get better UI
 
