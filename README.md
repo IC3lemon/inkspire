@@ -88,7 +88,9 @@ npm run build
     - [x] implement splines (kinda done ? pseudo stroke approach currently)
     - [x] drop the rastered approach, implement a spline one (need to perfect)
     - [x] stroke erasing
-- [ ] Basic color picker implementation
+- [x] Basic color picker implementation
+    - [ ] maintain color palette of recent colours
+    - [ ] dropper picker implementation to get colors from canvas
 - [ ] Layer management
 - [ ] clean up the html, get better UI
 
