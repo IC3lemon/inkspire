@@ -61,14 +61,15 @@ export class Renderer {
         lastDrawX: number | null,
         lastDrawY: number | null,
         erasing: boolean,
-        brushSize : number = 0.07
+        brushSize : number = 0.07,
+        brushColor : number[] = [0.13, 0.157, 0.192] 
     ) {
         document.getElementById('brushSize')!.innerText = brushSize.toString();
         if (panning) {
             this.camera.pan(mouseX, mouseY);
         }
 
-        this.strokeMgr.update(drawing, erasing, drawX, drawY, lastDrawX, lastDrawY, brushSize);
+        this.strokeMgr.update(drawing, erasing, drawX, drawY, lastDrawX, lastDrawY, brushSize, brushColor);
         this.cursorRenderer.update(drawX, drawY, erasing, brushSize + 0.03);
 
         const projection = mat4.create();

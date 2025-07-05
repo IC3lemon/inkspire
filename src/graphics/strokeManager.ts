@@ -45,12 +45,10 @@ export class StrokeManager {
         brushSize: number,
         brushColor: number[] = [0.13, 0.157, 0.192]
     ) {
-        // Dynamic taper scaling
         const minSize = 0.01;
         const maxSize = 2.5;
         const clamped = Math.min(Math.max(brushSize, minSize), maxSize);
 
-        // More aggressive falloff using exponential
         const maxTaper = 0.7;
         const scale = 20;
         const taper = maxTaper / (1 + scale * clamped * clamped);
@@ -61,7 +59,6 @@ export class StrokeManager {
         this.minRadius = brushSize * (1 - taperFactor);
 
 
-        // Update debug panel
         document.getElementById('maxsize')!.innerText = this.maxRadius.toFixed(3);
         document.getElementById('minsize')!.innerText = this.minRadius.toFixed(3);
 
