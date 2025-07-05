@@ -24,13 +24,16 @@ export class App{
     isSpacePressed: boolean = false;
     isLeftClicked:boolean = false;
     skipNextClick : boolean = false;
+    isErasing : boolean;
     lastDrawX: number | null = null;
     lastDrawY: number | null = null;
     smoothedX: number = 0;
     smoothedY: number = 0;
+
     smoothedSpeed: number = 0;
 
     constructor(canvas : HTMLCanvasElement){
+        this.isErasing = false;
         this.canvas = canvas;
         this.renderer = new Renderer(canvas);
 
@@ -89,12 +92,6 @@ export class App{
     run = () => {
         var running : boolean = true;
         const isDrawing = this.isLeftClicked && this.isCursorLocked && !this.skipNextClick && !this.isSpacePressed;
-        const brushSpeed = Math.sqrt(this.mouseX * this.mouseX + this.mouseY * this.mouseY);
-        const speedAlpha = 0.15;  
-        this.smoothedSpeed = (1 - speedAlpha) * this.smoothedSpeed + speedAlpha * brushSpeed; // is this dropping to 0 ???
-
-        var spidlabel = <HTMLElement>document.getElementById('speed');
-        spidlabel.innerText = brushSpeed.toString();
 
         const alpha = 0.45; // try 0.1 - 0.3 for smoothing aggressiveness 0.45 is comfy acc to me, 1 => smoothing off
         this.smoothedX = (1 - alpha) * this.smoothedX + alpha * this.ndcX;
@@ -107,7 +104,7 @@ export class App{
             this.smoothedX, this.smoothedY, 
             this.lastDrawX,
             this.lastDrawY,
-            this.smoothedSpeed // ts not working
+            this.isErasing // ts not working
         );
         if (isDrawing) {
             this.lastDrawX = this.smoothedX;
@@ -137,6 +134,11 @@ export class App{
         this.keyLabel.innerText = event.code + "released";
         if (event.code == 'Space'){
             this.isSpacePressed = false;
+        }
+        if (event.code == 'KeyE'){
+            this.isErasing = !this.isErasing;
+            var erasing = <HTMLElement>document.getElementById('erasing');
+            erasing.innerText = this.isErasing.toString();
         }
     }
 

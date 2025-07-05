@@ -1,7 +1,7 @@
 export class CircleMesh {
     buffer: GPUBuffer
     bufferLayout: GPUVertexBufferLayout
-
+    erased : boolean = false
     constructor(
         device: GPUDevice, 
         center: number[], 
