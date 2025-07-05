@@ -10,6 +10,7 @@ export class Camera {
         this.update();
     }
 
+
     update() {
         const target = vec3.fromValues(0, this.position[1], this.position[2]);
         mat4.lookAt(this.view, this.position, target, [0, 0, 1]);

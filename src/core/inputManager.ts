@@ -1,9 +1,13 @@
+import { Camera } from "./camera";
+
 export class InputManager {
     isCursorLocked = false;
     isSpacePressed = false;
     isLeftClicked = false;
     isErasing = false;
     skipNextClick = false;
+    zoomOut = false;
+    zoomIn = false;
 
     mouseX = 0;
     mouseY = 0;
@@ -65,6 +69,12 @@ export class InputManager {
     private onKeyDown = (e: KeyboardEvent) => {
         this.keyLabel.innerText = e.code;
         if (e.code === "Space") this.isSpacePressed = true;
+        if(e.code === "Minus"){
+            this.zoomOut = true;
+        }
+        else if(e.code === "Equal"){
+            this.zoomIn = true;
+        }
     };
 
     private onKeyUp = (e: KeyboardEvent) => {
@@ -73,6 +83,12 @@ export class InputManager {
         if (e.code === "KeyE") {
             this.isErasing = !this.isErasing;
             document.getElementById("erasing")!.innerText = this.isErasing.toString();
+        }
+        if(e.code === "Minus"){
+            this.zoomOut = false;
+        }
+        else if(e.code === "Equal"){
+            this.zoomIn = false;
         }
     };
 

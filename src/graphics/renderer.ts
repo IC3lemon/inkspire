@@ -9,6 +9,7 @@ export class Renderer {
     deviceInfoElem: HTMLElement;
     resolutionScale: number = 2.0;
     camera: Camera;
+    zoomValue : number = 10;
 
     contextMgr: GPUContextManager;
     strokeMgr: StrokeManager;
@@ -17,7 +18,7 @@ export class Renderer {
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.deviceInfoElem = document.getElementById("dev-width")!;
-        this.camera = new Camera([10, 0, 0]);
+        this.camera = new Camera([this.zoomValue, 0, 0]);
 
         this.contextMgr = new GPUContextManager(canvas);
         this.strokeMgr = new StrokeManager(canvas, this.contextMgr, 0.07, 0.02);
@@ -34,6 +35,7 @@ export class Renderer {
         );
 
         window.addEventListener("resize", () => this.setCanvasResolution());
+        this.canvas.toDataURL("image/png")
     }
 
     private setCanvasResolution() {

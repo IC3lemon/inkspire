@@ -1,5 +1,6 @@
 import { Renderer } from "../graphics/renderer";
 import { InputManager } from "../core/inputManager";
+import { Camera } from "../core/camera";
 
 export class App {
     canvas: HTMLCanvasElement;
@@ -11,11 +12,13 @@ export class App {
     smoothedX = 0;
     smoothedY = 0;
     smoothedSpeed = 0;
+    zoomLevel : number = 10;
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.renderer = new Renderer(canvas);
         this.input = new InputManager(canvas);
+        this.renderer.camera.position[0] = this.zoomLevel;
     }
 
     async initialize() {
@@ -25,6 +28,20 @@ export class App {
     run = () => {
         const i = this.input;
         const alpha = 0.45; 
+
+        if(i.zoomIn && this.zoomLevel > 1.5){
+            this.zoomLevel -= 0.5;
+            // i.zoomIn = false;
+        }
+        
+        else if (i.zoomOut) {
+            this.zoomLevel += 0.5;
+            // i.zoomOut = false;
+        }
+
+        this.renderer.camera.position[0] = this.zoomLevel;
+        this.renderer.camera.update();
+        document.getElementById('zoom')!.innerText = this.zoomLevel.toString();
 
         const isDrawing = i.isLeftClicked && i.isCursorLocked && !i.skipNextClick && !i.isSpacePressed;
         this.smoothedX = (1 - alpha) * this.smoothedX + alpha * i.ndcX;
