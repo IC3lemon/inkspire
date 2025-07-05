@@ -16,6 +16,8 @@ export class InputManager {
     mouseXLabel: HTMLElement;
     mouseYLabel: HTMLElement;
     pointerLabel: HTMLElement;
+    brushSize : number = 0.07;
+    taperPercent : number = 0.15;
 
     constructor(canvas: HTMLCanvasElement) {
         this.keyLabel = document.getElementById("key-down")!;
@@ -35,7 +37,12 @@ export class InputManager {
         canvas.addEventListener("mousedown", e => { if (e.button === 0) this.isLeftClicked = true; });
         canvas.addEventListener("mouseup", e => { if (e.button === 0) this.isLeftClicked = false; });
         canvas.addEventListener("mouseleave", () => { this.isLeftClicked = false; });
-
+        const brushSlider = document.getElementById("brush-size-slider") as HTMLInputElement;
+        
+        brushSlider.addEventListener("input", () => {
+            this.brushSize = parseFloat(brushSlider.value);
+        });
+        
         canvas.addEventListener("mousemove", (e) => this.onMouseMove(e, canvas));
     }
 
@@ -64,8 +71,8 @@ export class InputManager {
         this.ndcX = (10 * this.virtualMouseX) / canvas.width;
         this.ndcY = 1 - ((10 * this.virtualMouseY) / canvas.height);
 
-        this.mouseXLabel.innerText = this.mouseX.toString();
-        this.mouseYLabel.innerText = this.mouseY.toString();
+        this.mouseXLabel.innerText = this.ndcX.toString();
+        this.mouseYLabel.innerText = this.ndcY.toString();
         this.pointerLabel.innerText = (this.isSpacePressed && this.isLeftClicked).toString();
     }
 }

@@ -20,7 +20,7 @@ export class Renderer {
         this.camera = new Camera([10, 0, 0]);
 
         this.contextMgr = new GPUContextManager(canvas);
-        this.strokeMgr = new StrokeManager(canvas, this.contextMgr);
+        this.strokeMgr = new StrokeManager(canvas, this.contextMgr, 0.07, 0.02);
         this.cursorRenderer = new CursorRenderer(canvas, this.contextMgr);
     }
 
@@ -60,14 +60,16 @@ export class Renderer {
         drawY: number,
         lastDrawX: number | null,
         lastDrawY: number | null,
-        erasing: boolean
+        erasing: boolean,
+        brushSize : number = 0.07
     ) {
+        document.getElementById('brushSize')!.innerText = brushSize.toString();
         if (panning) {
             this.camera.pan(mouseX, mouseY);
         }
 
-        this.strokeMgr.update(drawing, erasing, drawX, drawY, lastDrawX, lastDrawY);
-        this.cursorRenderer.update(drawX, drawY, erasing);
+        this.strokeMgr.update(drawing, erasing, drawX, drawY, lastDrawX, lastDrawY, brushSize);
+        this.cursorRenderer.update(drawX, drawY, erasing, brushSize + 0.03);
 
         const projection = mat4.create();
         mat4.perspective(projection, Math.PI / 4, this.canvas.width / this.canvas.height, 0.001, 1000);

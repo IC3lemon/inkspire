@@ -11,14 +11,14 @@ export class CursorRenderer {
         this.contextMgr = contextMgr;
     }
 
-    update(x: number, y: number, erasing: boolean) {
+    update(x: number, y: number, erasing: boolean, cursorSize : number) {
         this.mesh = new CircleMesh(
             this.contextMgr.device,
             [x, y],
             this.canvas.width,
             this.canvas.height,
             [+erasing, 0, +!erasing],
-            0.1
+            cursorSize
         );
     }
 

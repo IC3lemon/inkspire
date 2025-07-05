@@ -25,6 +25,7 @@ export class App {
     run = () => {
         const alpha = 0.45; // 0.1 to 0.3 for aggressive smoothing
         const i = this.input;
+        
 
         const isDrawing = i.isLeftClicked && i.isCursorLocked && !i.skipNextClick && !i.isSpacePressed;
         this.smoothedX = (1 - alpha) * this.smoothedX + alpha * i.ndcX;
@@ -39,7 +40,8 @@ export class App {
             this.smoothedY,
             this.lastDrawX,
             this.lastDrawY,
-            i.isErasing
+            i.isErasing,
+            i.brushSize// brush Sizez
         );
 
         if (isDrawing) {

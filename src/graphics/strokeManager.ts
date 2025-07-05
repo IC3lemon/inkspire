@@ -8,18 +8,28 @@ export class StrokeManager {
     circleMeshes: CircleMesh[] = [];
     strokes: Stroke[] = [];
     currentStrokePoints: number[][] = [];
-    defaultBrushSize: number;
+    defaultBrushSize: number = 0.07;
+    minRadius: number;
+    maxRadius: number;
 
-    constructor(canvas: HTMLCanvasElement, contextMgr: GPUContextManager, defaultBrushSize = 0.07) {
+    constructor(
+        canvas: HTMLCanvasElement,
+        contextMgr: GPUContextManager,
+        maxRadius: number = 0.07,
+        minRadius: number = 0.02
+    ) {
         this.canvas = canvas;
         this.contextMgr = contextMgr;
-        this.defaultBrushSize = defaultBrushSize;
+        this.maxRadius = maxRadius;
+        this.minRadius = minRadius;
     }
 
     getBufferLayout(): GPUVertexBufferLayout {
         const temp = new CircleMesh(
             this.contextMgr.device,
-            [0, 0], this.canvas.width, this.canvas.height,
+            [0, 0],
+            this.canvas.width,
+            this.canvas.height,
             [1, 1, 1]
         );
         return temp.bufferLayout;
@@ -31,9 +41,29 @@ export class StrokeManager {
         drawX: number,
         drawY: number,
         lastDrawX: number | null,
-        lastDrawY: number | null
+        lastDrawY: number | null,
+        brushSize: number,
+        brushColor: number[] = [0.13, 0.157, 0.192]
     ) {
-        const brushColor = [0.13, 0.157, 0.192];
+        // Dynamic taper scaling
+        const minSize = 0.01;
+        const maxSize = 2.5;
+        const clamped = Math.min(Math.max(brushSize, minSize), maxSize);
+
+        // More aggressive falloff using exponential
+        const maxTaper = 0.7;
+        const scale = 20;
+        const taper = maxTaper / (1 + scale * clamped * clamped);
+        const taperFactor = Math.min(Math.max(taper, 0), 0.95);
+
+        this.defaultBrushSize = brushSize;
+        this.maxRadius = brushSize;
+        this.minRadius = brushSize * (1 - taperFactor);
+
+
+        // Update debug panel
+        document.getElementById('maxsize')!.innerText = this.maxRadius.toFixed(3);
+        document.getElementById('minsize')!.innerText = this.minRadius.toFixed(3);
 
         if (drawing && !erasing) {
             const prevX = lastDrawX;
@@ -65,16 +95,17 @@ export class StrokeManager {
             const radii: number[] = [];
 
             this.circleMeshes.splice(this.circleMeshes.length - totalPoints);
-
             const startIndex = this.circleMeshes.length;
 
             for (let i = 0; i < totalPoints; i++) {
                 let t = 1;
-                if (i < totalPoints * taperPercent) t = i / (totalPoints * taperPercent);
-                else if (i > totalPoints * (1 - taperPercent)) t = (totalPoints - i) / (totalPoints * taperPercent);
-                t = Math.max(0, Math.min(1, t));
+                if (i < totalPoints * taperPercent)
+                    t = i / (totalPoints * taperPercent);
+                else if (i > totalPoints * (1 - taperPercent))
+                    t = (totalPoints - i) / (totalPoints * taperPercent);
 
-                const radius = 0.02 + (this.defaultBrushSize - 0.02) * t;
+                t = Math.max(0, Math.min(1, t));
+                const radius = this.minRadius + (this.maxRadius - this.minRadius) * t;
                 const [x, y] = this.currentStrokePoints[i];
                 this.drawCircle(x, y, brushColor, radius);
                 radii.push(radius);

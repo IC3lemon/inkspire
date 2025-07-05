@@ -1,25 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>webgpu escapades</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>webgpu escapades</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="container">
-        <canvas id="gfx-main" style="width:800px; height:600px;"></canvas>
+  <div id="container">
+
+    <!-- Left Debug Panel -->
+    <div id="left-debug-panel">
+      <div id="debug">Debug Info
         <hr>
-        erasing : <div id="erasing"></div>
-        strokes : <div id="strokes"></div>
-        brushsize : <div id="size"></div>
-        spid : <div id="speed"></div>
-        device : <div id="dev-width"></div>
-        panning ? : <div id="pointerlock"></div>
-        key down : <div id="key-down"></div>
-        mouse x : <div id="mouse-x"></div>
-        mouse y : <div id="mouse-y"></div>
+brush size : <span id="brushSize"></span>
+erasing : <span id="erasing"></span>
+strokes : <span id="strokes"></span>
+maxSize : <span id="maxsize"></span>
+minSize : <span id="minsize"></span>
+brush color : <span id="brushcolor"></span>
+device : <span id="dev-width"></span>
+panning ? : <span id="pointerlock"></span>
+key down : <span id="key-down"></span>
         <hr>
+      </div> 
     </div>
-    <script src="dist/main.js"></script>
+
+    <!-- Center Canvas with Mouse Info -->
+    <div style="position: relative;">
+      <canvas id="gfx-main" width="800" height="600"></canvas>
+      <div id="mouse-info">
+        x: <span id="mouse-x">0</span><br>
+        y: <span id="mouse-y">0</span>
+      </div>
+    </div>
+
+    <!-- Right Debug Panel with Slider -->
+    <div id="right-debug-panel">
+      <div id="brush-controls">
+        <label for="brush-size-slider">Brush Size</label>
+        <input type="range" id="brush-size-slider" min="0.01" max="1.5" step="0.01" value="0.07">
+      </div>
+    </div>
+
+  </div>
+
+  <script src="dist/main.js"></script>
 </body>
 </html>
