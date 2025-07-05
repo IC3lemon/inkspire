@@ -11,31 +11,68 @@ npm run build
 ## `plan for da arch`
 ```
 ┌──────────────────────────────┐
-│ WebGPU Device & Queue       │
-│ - Resource management       │
-│ - Compute/Render commands   │
+│ WebGPU Context Manager       │
+│ (GPUContextManager)          │
+│ - Adapter, Device, Queue     │
+│ - Canvas & Context           │
+│ - Render Pipeline, BindGroups│
+│ - Uniform buffer setup       │
 └───────┬──────────────────────┘
         │
-┌───────▼──────────────────────┐
-│ Compute Shaders             │
-│ - Brush simulation          │
-│ - Particle systems          │
-│ - Physics-based effects      │
-└───────┬──────────────────────┘
-        │
-┌───────▼──────────────────────┐
-│ Render Pipeline             │
-│ - Vertex processing         │
-│ - Fragment blending         │
-│ - Post-processing effects   │
-└───────┬──────────────────────┘
-        │
-┌───────▼──────────────────────┐
-│ Texture Management          │
-│ - Layer storage             │
-│ - Dirty rectangle tracking  │
-│ - Async texture transfers   │
+        ▼
+┌──────────────────────────────┐
+│ Layer Manager                │
+│ (future)                     │
+│ - Multiple drawing layers    │
+│ - Alpha blending             │
+│ - Layer ordering & visibility│
+└───────┬────────────┬─────────┘
+        │            │
+        ▼            ▼
+┌──────────────┐  ┌────────────────────┐
+│ StrokeManager│  │ Texture Pool       │
+│ - Stroke data│  │ (future)           │
+│ - Circle mesh│  │ - Cached textures  │
+│ - Tapering   │  │ - Reuse + upload   │
+│ - Erase logic│  │ - Dirty tracking   │
+└────┬─────────┘  └────────────────────┘
+     │
+     ▼
+┌──────────────────────────────┐
+│ Undo / Redo System           │
+│ (future)                     │
+│ - Action stack               │
+│ - Layer-aware undo           │
+└────┬─────────────────────────┘
+     │
+     ▼
+┌──────────────────────────────┐
+│ Cursor Renderer              │
+│ - Eraser / Brush preview     │
+│ - Color/size indication      │
+│ - (future: shader preview)   │
+└────┬─────────────────────────┘
+     │
+     ▼
+┌──────────────────────────────┐
+│ Renderer Core                │
+│ (Renderer.ts)                │
+│ - Orchestrates everything    │
+│ - Handles camera movement    │
+│ - Composes layers            │
+│ - Manages final render pass  │
+└────┬─────────────────────────┘
+     │
+     ▼
+┌──────────────────────────────┐
+│ UI + App Layer               │
+│ (App.ts, HTML overlay)       │
+│ - Pointer locking            │
+│ - Tool switching             │
+│ - Layer panel (future)       │
+│ - Keyboard/mouse handlers    │
 └──────────────────────────────┘
+
 ```
 
 ## TODO :
