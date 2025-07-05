@@ -19,11 +19,11 @@ export class App {
     }
 
     async initialize() {
-        await this.renderer.Initialize();
+        await this.renderer.initialize();
     }
 
     run = () => {
-        const alpha = 0.45;
+        const alpha = 0.45; // 0.1 to 0.3 for aggressive smoothing
         const i = this.input;
 
         const isDrawing = i.isLeftClicked && i.isCursorLocked && !i.skipNextClick && !i.isSpacePressed;
