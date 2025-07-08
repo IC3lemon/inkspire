@@ -13,6 +13,7 @@ export class App {
     smoothedY = 0;
     smoothedSpeed = 0;
     zoomLevel : number = 10;
+    
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
@@ -28,6 +29,30 @@ export class App {
     run = () => {
         const i = this.input;
         const alpha = 0.45; 
+
+        if(i.takeScreenShot){
+            i.takeScreenShot = false;
+            // remove cursor
+            this.renderer.render(
+                true, // panning
+                false,
+                i.mouseX,
+                i.mouseY,
+                this.smoothedX,
+                this.smoothedY,
+                this.lastDrawX,
+                this.lastDrawY,
+                i.isErasing,
+                i.brushSize,// brush Sizez
+                i.brushColor
+            );
+            const dataURL = this.canvas.toDataURL("image/png");
+
+            const link = document.createElement("a");
+            link.href = dataURL;
+            link.download = "screenshot.png";
+            link.click();
+        } // perfecto
 
         if(i.zoomIn && this.zoomLevel > 1.5){
             this.zoomLevel -= 0.5;
@@ -74,5 +99,7 @@ export class App {
         i.mouseY = 0;
 
         requestAnimationFrame(this.run);
+
+        
     };
 }

@@ -8,6 +8,7 @@ export class InputManager {
     skipNextClick = false;
     zoomOut = false;
     zoomIn = false;
+    takeScreenShot = false;
 
     mouseX = 0;
     mouseY = 0;
@@ -89,6 +90,10 @@ export class InputManager {
         }
         else if(e.code === "Equal"){
             this.zoomIn = false;
+        }
+
+        if(e.code === "Enter"){
+            this.takeScreenShot = true;
         }
     };
 
