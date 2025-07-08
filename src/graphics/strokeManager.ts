@@ -123,6 +123,11 @@ export class StrokeManager {
                 if (stroke.isPointOnStroke(drawX, drawY)) {
                     this.historyMgr.save(this.strokes);
                     const count = stroke.meshEndIndex - stroke.meshStartIndex + 2;
+
+                    for (let j = 0; j < count; j++) {
+                        this.circleMeshes[stroke.meshStartIndex + j]?.destroy();
+                    }
+
                     this.circleMeshes.splice(stroke.meshStartIndex, count);
                     this.strokes.splice(i, 1);
                     this.recalculateStrokeMeshIndices();
@@ -168,6 +173,10 @@ export class StrokeManager {
     }
 
     applyStrokes(newStrokes: Stroke[]) {
+        for (const mesh of this.circleMeshes) {
+            mesh.destroy();
+        }
+        this.circleMeshes = [];
         this.strokes = newStrokes;
         this.rebuildMeshes();
     }

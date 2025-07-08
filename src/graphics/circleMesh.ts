@@ -59,4 +59,8 @@ export class CircleMesh {
             ]
         }
     }
+
+    destroy() {
+        this.buffer.destroy();
+    }
 }
