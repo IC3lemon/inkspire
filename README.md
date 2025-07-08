@@ -104,4 +104,6 @@ npm run build
 
 
 ## `Screenshots` 
+![screenshot (1)](https://github.com/user-attachments/assets/93de0a99-a0cf-4b01-9af6-b30ccc6712cf)
+
 ![screenshot](https://github.com/user-attachments/assets/68a12b0b-ec3f-4d60-97a9-00e2245cbb6a)
