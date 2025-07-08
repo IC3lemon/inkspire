@@ -1,6 +1,7 @@
 import { CircleMesh } from "./circleMesh";
 import { Stroke } from "./stroke";
 import { GPUContextManager } from "./gpuContextManager";
+import { HistoryManager } from "../control/historyManager";
 
 export class StrokeManager {
     canvas: HTMLCanvasElement;
@@ -15,6 +16,7 @@ export class StrokeManager {
     constructor(
         canvas: HTMLCanvasElement,
         contextMgr: GPUContextManager,
+        public historyMgr : HistoryManager,
         maxRadius: number = 0.07,
         minRadius: number = 0.02
     ) {
@@ -87,6 +89,8 @@ export class StrokeManager {
         }
 
         if (!drawing && !erasing && this.currentStrokePoints.length > 0) {
+            this.historyMgr.save(this.strokes);
+
             const totalPoints = this.currentStrokePoints.length;
             const taperPercent = 0.15;
             const radii: number[] = [];
@@ -117,6 +121,7 @@ export class StrokeManager {
             for (let i = 0; i < this.strokes.length; i++) {
                 const stroke = this.strokes[i];
                 if (stroke.isPointOnStroke(drawX, drawY)) {
+                    this.historyMgr.save(this.strokes);
                     const count = stroke.meshEndIndex - stroke.meshStartIndex + 2;
                     this.circleMeshes.splice(stroke.meshStartIndex, count);
                     this.strokes.splice(i, 1);
@@ -160,5 +165,22 @@ export class StrokeManager {
 
         const strokeCountElem = document.getElementById("strokes");
         if (strokeCountElem) strokeCountElem.innerText = this.strokes.length.toString();
+    }
+
+    applyStrokes(newStrokes: Stroke[]) {
+        this.strokes = newStrokes;
+        this.rebuildMeshes();
+    }
+
+    private rebuildMeshes() {
+        this.circleMeshes = [];
+        for (const stroke of this.strokes) {
+            for (let i = 0; i < stroke.points.length; i++) {
+                const [x, y] = stroke.points[i];
+                const radius = stroke.radii[i];
+                this.drawCircle(x, y, stroke.color, radius);
+            }
+        }
+        this.recalculateStrokeMeshIndices();
     }
 }

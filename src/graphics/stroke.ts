@@ -33,4 +33,14 @@ export class Stroke {
         }
         return false;
     }
+
+    clone() : Stroke{
+        return new Stroke(
+            this.points.map(p => [...p]),
+            [...this.radii],
+            [...this.color],
+            this.meshStartIndex,
+            this.meshEndIndex
+        );
+    }
 }

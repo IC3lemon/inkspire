@@ -24,7 +24,22 @@ export class App {
 
     async initialize() {
         await this.renderer.initialize();
+        window.addEventListener("keydown", (e) => {
+            if (e.ctrlKey && e.key === "z") {
+                e.preventDefault();
+                const undoStrokes = this.renderer.strokeMgr.historyMgr.undo(this.renderer.strokeMgr.strokes);
+                if (undoStrokes) this.renderer.strokeMgr.applyStrokes(undoStrokes);
+            }
+            if (e.ctrlKey && e.key === "y") {
+                e.preventDefault();
+                const redoStrokes = this.renderer.strokeMgr.historyMgr.redo(this.renderer.strokeMgr.strokes);
+                if (redoStrokes) this.renderer.strokeMgr.applyStrokes(redoStrokes);
+            }
+        });
     }
+
+    
+
 
     run = () => {
         const i = this.input;

@@ -97,8 +97,8 @@ npm run build
     - [ ] Layer management
     - [ ] Utilities and mechanics
          - [ ] Flip Canvas
-         - [ ] Undo Redo
-         - [ ] maintain action stack ( as strokes maybe? )
+         - [x] Undo Redo
+         - [x] maintain action stack ( as strokes maybe? )
           
-- [ ] clean up the html, get better UI
+- [ ] clean up the html, get better UI (someone make this pls, i can only ask gpt to make ui slop, no css skills here)
 

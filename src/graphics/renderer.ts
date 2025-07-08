@@ -3,6 +3,7 @@ import { Camera } from "../core/camera";
 import { GPUContextManager } from "./gpuContextManager";
 import { StrokeManager } from "./strokeManager";
 import { CursorRenderer } from "./cursor";
+import { HistoryManager } from "../control/historyManager";
 
 export class Renderer {
     canvas: HTMLCanvasElement;
@@ -15,13 +16,15 @@ export class Renderer {
     strokeMgr: StrokeManager;
     cursorRenderer: CursorRenderer;
 
+    historyManager : HistoryManager;
+
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.deviceInfoElem = document.getElementById("dev-width")!;
         this.camera = new Camera([this.zoomValue, 0, 0]);
-
+        this.historyManager = new HistoryManager();
         this.contextMgr = new GPUContextManager(canvas);
-        this.strokeMgr = new StrokeManager(canvas, this.contextMgr, 0.07, 0.02);
+        this.strokeMgr = new StrokeManager(canvas, this.contextMgr, this.historyManager, 0.07, 0.02);
         this.cursorRenderer = new CursorRenderer(canvas, this.contextMgr);
     }
 
