@@ -102,3 +102,6 @@ npm run build
           
 - [ ] clean up the html, get better UI (someone make this pls, i can only ask gpt to make ui slop, no css skills here)
 
+
+## `Screenshots` 
+![screenshot](https://github.com/user-attachments/assets/68a12b0b-ec3f-4d60-97a9-00e2245cbb6a)
