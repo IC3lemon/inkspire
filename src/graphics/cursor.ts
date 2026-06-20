@@ -26,11 +26,11 @@ export class CursorRenderer {
     update(x: number, y: number, erasing: boolean, cursorSize: number) {
         this.instanceData[0] = x;
         this.instanceData[1] = y;
-        this.instanceData[2] = erasing ? 1.0 : 0.25;
-        this.instanceData[3] = erasing ? 0.3 : 0.55;
-        this.instanceData[4] = erasing ? 0.3 : 1.0;
+        this.instanceData[2] = erasing ? 1.0 : 0.15;
+        this.instanceData[3] = erasing ? 0.3 : 0.35;
+        this.instanceData[4] = erasing ? 0.3 : 0.85;
         this.instanceData[5] = cursorSize;
-        this.instanceData[6] = 0.6; // alpha
+        this.instanceData[6] = 0.85; // alpha
 
         this.contextMgr.device.queue.writeBuffer(
             this.instanceBuffer, 0,

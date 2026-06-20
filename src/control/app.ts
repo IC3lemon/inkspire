@@ -3,6 +3,7 @@ import { InputManager } from "../core/inputManager";
 import { AnimationManager } from "./animationManager";
 import { Exporter } from "../core/exporter";
 import { AudioManager } from "../core/audioManager";
+import { CollabManager } from "../core/collabManager";
 
 export class App {
     canvas: HTMLCanvasElement;
@@ -11,6 +12,7 @@ export class App {
     animMgr: AnimationManager;
     exporter!: Exporter;
     audioMgr!: AudioManager;
+    collab: CollabManager | null = null;
 
     lastDrawX: number | null = null;
     lastDrawY: number | null = null;
@@ -41,6 +43,8 @@ export class App {
     }
 
     async initialize() {
+        let selectedRoomId: string | null = null;
+
         // Block until splash screen is resolved
         await new Promise<void>(resolve => {
             const screen = document.getElementById("splash-screen");
@@ -59,22 +63,99 @@ export class App {
                 document.documentElement.requestFullscreen().catch(() => { });
                 resolve();
             });
+            document.getElementById("splash-collab")?.addEventListener("click", () => {
+                document.getElementById("splash-room-section")?.classList.remove("hidden");
+                document.getElementById("splash-buttons")?.classList.add("hidden");
+                (document.getElementById("room-id-input") as HTMLInputElement)?.focus();
+            });
+            const doJoin = () => {
+                const input = document.getElementById("room-id-input") as HTMLInputElement;
+                selectedRoomId = input?.value.trim() || Math.random().toString(36).slice(2, 8);
+                this.animMgr.clearSession();
+                screen.remove();
+                document.documentElement.requestFullscreen().catch(() => { });
+                resolve();
+            };
+            document.getElementById("splash-join")?.addEventListener("click", doJoin);
+            document.getElementById("room-id-input")?.addEventListener("keydown", (e) => {
+                if ((e as KeyboardEvent).key === "Enter") doJoin();
+            });
         });
 
         await this.renderer.initialize();
         this.renderer.strokeMgr.loadFrame();
 
-        // Wire undo / redo / navigation via keyboard
+        // ── Collaboration setup ────────────────────────────────────────────────
+        if (selectedRoomId) {
+            this.collab = new CollabManager();
+            this.renderer.strokeMgr.collab = this.collab;
+
+            // Wait for room state before continuing (or time out)
+            await new Promise<void>(resolve => {
+                const timeout = window.setTimeout(resolve, 4000);
+                this.collab!.onRoomState = (state) => {
+                    window.clearTimeout(timeout);
+                    this.animMgr.animation = { version: 1, ...state };
+                    this.animMgr.currentFrameIndex = 0;
+                    this.animMgr.currentLayerIndex = 0;
+                    this.renderer.strokeMgr.loadFrame();
+                    resolve();
+                };
+                this.collab!.connect(selectedRoomId!);
+            });
+
+            this.collab.onRemoteStroke = (frameIdx, layerIdx, stroke) => {
+                if (frameIdx < this.animMgr.frameCount && layerIdx < this.animMgr.layerCount) {
+                    this.animMgr.animation.frames[frameIdx].layerStrokes[layerIdx].push(stroke);
+                    if (frameIdx === this.animMgr.currentFrameIndex) {
+                        this.renderer.strokeMgr.loadFrame();
+                    }
+                }
+            };
+
+            this.collab.onFullSync = (state) => {
+                this.animMgr.animation = { version: 1, ...state };
+                this.animMgr.currentFrameIndex = Math.min(
+                    this.animMgr.currentFrameIndex, this.animMgr.frameCount - 1
+                );
+                this.animMgr.currentLayerIndex = Math.min(
+                    this.animMgr.currentLayerIndex, this.animMgr.layerCount - 1
+                );
+                this.renderer.strokeMgr.loadFrame();
+                this.updateTimelineUI();
+                this.updateLayerUI();
+            };
+
+            this.collab.onPeersChanged = () => this.updateCollabBadge();
+            window.setInterval(() => this.updateCollabBadge(), 2000);
+            this.updateCollabBadge();
+        }
+
+        // ── Keyboard shortcuts ─────────────────────────────────────────────────
         window.addEventListener("keydown", (e) => {
             if (e.ctrlKey && e.key === "z") {
                 e.preventDefault();
                 const prev = this.renderer.strokeMgr.historyMgr.undo(this.animMgr.currentStrokes);
-                if (prev) this.renderer.strokeMgr.applyUndoRedo(prev);
+                if (prev) {
+                    this.renderer.strokeMgr.applyUndoRedo(prev);
+                    this.collab?.emitFullSync(
+                        this.animMgr.animation.fps,
+                        this.animMgr.animation.layers,
+                        this.animMgr.animation.frames
+                    );
+                }
             }
             if (e.ctrlKey && e.key === "y") {
                 e.preventDefault();
                 const next = this.renderer.strokeMgr.historyMgr.redo(this.animMgr.currentStrokes);
-                if (next) this.renderer.strokeMgr.applyUndoRedo(next);
+                if (next) {
+                    this.renderer.strokeMgr.applyUndoRedo(next);
+                    this.collab?.emitFullSync(
+                        this.animMgr.animation.fps,
+                        this.animMgr.animation.layers,
+                        this.animMgr.animation.frames
+                    );
+                }
             }
             // Arrow navigation
             if (!e.ctrlKey && !e.shiftKey && !e.altKey && e.code === "ArrowLeft") {
@@ -93,6 +174,11 @@ export class App {
             if (this.showOnion) this.renderer.strokeMgr.loadOnionSkins();
             this.updateTimelineUI();
             this.updateLayerUI();
+            this.collab?.emitFullSync(
+                this.animMgr.animation.fps,
+                this.animMgr.animation.layers,
+                this.animMgr.animation.frames
+            );
         };
 
         this.initResizers();
@@ -100,6 +186,23 @@ export class App {
         this.buildUI();
         this.updateTimelineUI();
         this.updateLayerUI();
+    }
+
+    // ── Collab badge ───────────────────────────────────────────────────────────
+
+    private updateCollabBadge() {
+        const badge = document.getElementById("collab-badge");
+        if (!badge || !this.collab) return;
+        badge.classList.remove("hidden");
+        const roomEl = document.getElementById("collab-room");
+        const usersEl = document.getElementById("collab-users");
+        const latEl = document.getElementById("collab-latency");
+        if (roomEl) roomEl.textContent = this.collab.connectedRoom ?? '–';
+        const total = this.collab.peerCount + 1;
+        if (usersEl) usersEl.textContent = `${total} user${total !== 1 ? 's' : ''}`;
+        if (latEl) latEl.textContent = this.collab.avgLatencyMs > 0
+            ? `${this.collab.avgLatencyMs}ms`
+            : (this.collab.isConnected ? 'connected' : 'connecting…');
     }
 
     // ── UI Panel Resizers ────────────────────────────────────────────────────
@@ -408,11 +511,25 @@ export class App {
         // Undo / Redo toolbar buttons
         document.getElementById("undo-btn")?.addEventListener("click", () => {
             const prev = this.renderer.strokeMgr.historyMgr.undo(this.animMgr.currentStrokes);
-            if (prev) this.renderer.strokeMgr.applyUndoRedo(prev);
+            if (prev) {
+                this.renderer.strokeMgr.applyUndoRedo(prev);
+                this.collab?.emitFullSync(
+                    this.animMgr.animation.fps,
+                    this.animMgr.animation.layers,
+                    this.animMgr.animation.frames
+                );
+            }
         });
         document.getElementById("redo-btn")?.addEventListener("click", () => {
             const next = this.renderer.strokeMgr.historyMgr.redo(this.animMgr.currentStrokes);
-            if (next) this.renderer.strokeMgr.applyUndoRedo(next);
+            if (next) {
+                this.renderer.strokeMgr.applyUndoRedo(next);
+                this.collab?.emitFullSync(
+                    this.animMgr.animation.fps,
+                    this.animMgr.animation.layers,
+                    this.animMgr.animation.frames
+                );
+            }
         });
 
         // FPS input
@@ -479,8 +596,13 @@ export class App {
                     if (this.showOnion) this.renderer.strokeMgr.loadOnionSkins();
                     this.updateTimelineUI();
                     this.updateLayerUI();
-                    const fpsInput = document.getElementById("fps-input") as HTMLInputElement;
-                    fpsInput.value = String(this.animMgr.animation.fps);
+                    const fpsInputEl = document.getElementById("fps-input") as HTMLInputElement;
+                    fpsInputEl.value = String(this.animMgr.animation.fps);
+                    this.collab?.emitFullSync(
+                        this.animMgr.animation.fps,
+                        this.animMgr.animation.layers,
+                        this.animMgr.animation.frames
+                    );
                 };
                 reader.readAsText(file);
             };

@@ -1028,3 +1028,100 @@ input[type="range"]::-moz-range-thumb {
   background: var(--ink);
   transition: width 0.1s ease-out;
 }
+
+/* ── Collaboration badge (toolbar) ── */
+#collab-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 8px;
+  padding: 0 8px;
+  height: 22px;
+  border: 1px solid var(--p3);
+  border-radius: 2px;
+  background: var(--p1);
+  flex-shrink: 0;
+}
+
+.collab-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4caf6e;
+  flex-shrink: 0;
+}
+
+.collab-room {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink);
+  letter-spacing: 0.04em;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.collab-users,
+.collab-latency {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--p5);
+  white-space: nowrap;
+}
+
+.collab-sep {
+  color: var(--p3);
+  font-size: 9px;
+}
+
+/* ── Splash collab section ── */
+.sbtn-collab {
+  border-color: var(--p4);
+  color: var(--p6);
+}
+
+.sbtn-collab:hover {
+  background: var(--p2);
+  border-color: var(--p5);
+  color: var(--ink);
+}
+
+#splash-room-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.splash-room-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--p5);
+  letter-spacing: 0.06em;
+}
+
+.splash-room-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.room-input {
+  height: 30px;
+  padding: 0 10px;
+  background: var(--p1);
+  border: 1px solid var(--p4);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink);
+  outline: none;
+  width: 180px;
+}
+
+.room-input:focus {
+  border-color: var(--p6);
+}

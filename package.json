@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm run install-missing-dependencies && npm run build && npm run serve",
+    "start": "npm run install-missing-dependencies && npm run build && node server/server.js",
+    "dev": "concurrently \"webpack --config webpack.config.js --watch\" \"node server/server.js\"",
     "install-missing-dependencies": "npm i",
     "build": "webpack --config webpack.config.js",
     "serve": "live-server --cors --host=0.0.0.0"
@@ -24,12 +25,15 @@
   "dependencies": {
     "@types/node": "^24.0.4",
     "@webgpu/types": "^0.1.61",
+    "express": "^4.18.2",
     "gifenc": "^1.0.3",
     "gl-matrix": "^3.4.3",
     "http-server": "^14.1.1",
     "jquery": "^3.7.1",
     "jszip": "^3.10.1",
     "mp4-muxer": "^5.2.2",
+    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.7.2",
     "ts-loader": "^9.5.2",
     "ts-shader-loader": "^2.0.2",
     "typescript": "^5.8.3",
@@ -39,6 +43,7 @@
   },
   "devDependencies": {
     "@types/jquery": "^3.5.32",
+    "concurrently": "^8.2.2",
     "live-server": "^1.2.2"
   }
 }

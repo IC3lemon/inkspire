@@ -3,6 +3,7 @@ import { GPUContextManager } from "./gpuContextManager";
 import { HistoryManager } from "../control/historyManager";
 import { AnimationManager } from "../control/animationManager";
 import { IStroke } from "../types/animationTypes";
+import { CollabManager } from "../core/collabManager";
 
 // 7 floats per instance: x, y, r, g, b, radius, alpha
 const FLOATS_PER_INSTANCE = 7;
@@ -33,6 +34,8 @@ export class StrokeManager {
 
     // In-progress stroke accumulation: [x, y, pressure, appliedRadius]
     currentStrokePoints: number[][] = [];
+
+    collab: CollabManager | null = null;
 
     constructor(
         canvas: HTMLCanvasElement,
@@ -83,15 +86,15 @@ export class StrokeManager {
         this.instanceCount = 0;
         this.instanceRuns = [];
         const strokes = this.animMgr.getFrameStrokes(this.animMgr.currentFrameIndex);
-        
+
         for (const s of strokes) {
             const isEraser = !!s.isEraser;
             const start = this.instanceCount;
-            
+
             for (let i = 0; i < s.points.length; i++) {
                 this.pushInstance(s.points[i][0], s.points[i][1], s.color, s.radii[i], 1.0);
             }
-            
+
             const count = this.instanceCount - start;
             if (count > 0) {
                 if (this.instanceRuns.length > 0 && this.instanceRuns[this.instanceRuns.length - 1].isEraser === isEraser) {
@@ -197,12 +200,17 @@ export class StrokeManager {
                 };
                 this.historyMgr.save(this.animMgr.currentStrokes);
                 this.animMgr.addStroke(stroke);
+                this.collab?.emitStroke(
+                    this.animMgr.currentFrameIndex,
+                    this.animMgr.currentLayerIndex,
+                    stroke
+                );
             } else {
                 this.instanceCount -= total;
                 const taperPct = 0.15;
                 for (let i = 0; i < total; i++) {
                     let t = 1;
-                    if (i < total * taperPct)          t = i / (total * taperPct);
+                    if (i < total * taperPct)            t = i / (total * taperPct);
                     else if (i > total * (1 - taperPct)) t = (total - i) / (total * taperPct);
                     t = Math.max(0, Math.min(1, t));
                     const r = this.minRadius + (this.maxRadius - this.minRadius) * t;
@@ -217,6 +225,11 @@ export class StrokeManager {
                 };
                 this.historyMgr.save(this.animMgr.currentStrokes);
                 this.animMgr.addStroke(stroke);
+                this.collab?.emitStroke(
+                    this.animMgr.currentFrameIndex,
+                    this.animMgr.currentLayerIndex,
+                    stroke
+                );
             }
             this.currentStrokePoints = [];
         }
@@ -256,20 +269,20 @@ export class StrokeManager {
             pass.setVertexBuffer(0, this.circleMesh.buffer);
             pass.setVertexBuffer(1, this.instanceBuffer);
             pass.setBindGroup(0, ctx.bindGroup);
-            
+
             // Draw runs
             for (const run of this.instanceRuns) {
                 pass.setPipeline(run.isEraser ? ctx.eraserPipeline : ctx.pipeline);
                 pass.draw(66, run.count, 0, run.start);
             }
-            
-            // If there's an active uncommitted stroke, it is at the end
+
+            // Active uncommitted stroke at the end
             let committedCount = 0;
             if (this.instanceRuns.length > 0) {
                 const lastRun = this.instanceRuns[this.instanceRuns.length - 1];
                 committedCount = lastRun.start + lastRun.count;
             }
-            
+
             if (this.instanceCount > committedCount) {
                 const uncommittedCount = this.instanceCount - committedCount;
                 pass.setPipeline(trueErasing ? ctx.eraserPipeline : ctx.pipeline);

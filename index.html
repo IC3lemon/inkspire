@@ -20,6 +20,14 @@
         <button class="tbtn" id="load-btn">open</button>
         <button class="tbtn accent" id="export-btn">export ↗</button>
       </div>
+      <div id="collab-badge" class="hidden">
+        <span class="collab-dot"></span>
+        <span id="collab-room" class="collab-room"></span>
+        <span class="collab-sep">·</span>
+        <span id="collab-users" class="collab-users"></span>
+        <span class="collab-sep">·</span>
+        <span id="collab-latency" class="collab-latency"></span>
+      </div>
     </div>
 
     <!-- WORKSPACE -->
@@ -161,11 +169,20 @@
       <div class="splash-content">
         <h1>inkspire</h1>
         <p>A minimalist animation tool</p>
-        <div class="splash-buttons">
+        <div class="splash-buttons" id="splash-buttons">
           <button class="sbtn" id="splash-new">Start Fresh</button>
           <button class="sbtn" id="splash-continue">Continue Previous</button>
+          <button class="sbtn sbtn-collab" id="splash-collab">Collaborate ↗</button>
         </div>
-        <p class="splash-hint">Press F11 for Fullscreen Experience</p>
+        <div id="splash-room-section" class="hidden">
+          <p class="splash-room-label">enter a room id to join or create</p>
+          <div class="splash-room-row">
+            <input id="room-id-input" class="room-input" placeholder="e.g. my-room-42" autocomplete="off" spellcheck="false" />
+            <button class="sbtn" id="splash-join">Join</button>
+          </div>
+          <p class="splash-hint">leave blank to generate a random room id</p>
+        </div>
+        <p class="splash-hint" id="splash-main-hint">Press F11 for Fullscreen Experience</p>
       </div>
     </div>
 
